@@ -19,7 +19,7 @@ public class Convertisseur {
     public static double radianToDegres(double value) {
         return value*57.2958;
     }
-
+//pp
     public static double degresToRadian(double value) {
         return value/57.2958;
     }

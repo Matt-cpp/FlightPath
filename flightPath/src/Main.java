@@ -44,7 +44,7 @@ public class Main {
 
         return r * Math.toRadians(deltaLongitude);
     }
-
+//pp
     public static double distSurMemeMeridien(double teta, double degLatitude) {
         double distDegLatitude = 111.12;
         return (degLatitude - teta) * distDegLatitude;
