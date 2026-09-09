@@ -25,6 +25,14 @@ public class Main {
 
         System.out.println(loxodromie(longA,latA,longB,latB));
 
+
+        double distOrtho = ortohodromie(latA, longA, latB, longB);
+
+
+        System.out.println("Distance orthodromique entre point A et point B : " + distOrtho);
+
+
+
     }
 
     public static double longueurParallele(double teta) {
@@ -74,6 +82,27 @@ public class Main {
         //resultat en radiant pour eviter des conversions inutiles pour la loxodromie
         return Math.atan((Math.toRadians(longA-longB)) /(b-a));
     }
+
+    public static double ortohodromie(double phiA, double lambdaA, double phiB, double lambdaB){
+
+        double radPhiA = Math.toRadians(phiA);
+        double radLambdaA = Math.toRadians(lambdaA);
+        double radPhiB = Math.toRadians(phiB);
+        double radLambdaB = Math.toRadians(lambdaB);
+
+        double base = Math.sin(radPhiA)*Math.sin(radPhiB)+ Math.cos(radPhiA)*Math.cos(radPhiB)*Math.cos(radLambdaB-radLambdaA);
+        //System.out.println("res attendu = 0.469846310393. res obtenu : "+base);
+
+        double base2 = Math.acos(base);
+        //System.out.println("res attendu = 61.9756793. res obtenu :"+base2);
+
+        double dist = 60*Math.toDegrees(base2);
+
+
+        return dist;
+
+    }
+
 
 
 
