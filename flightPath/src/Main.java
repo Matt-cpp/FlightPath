@@ -2,6 +2,7 @@
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
+
         double teta = 45;
 
         double longueur = longueurParallele(teta);
@@ -18,8 +19,8 @@ public class Main {
         double distMeridien = 2*distSurMemeMeridien(teta, degLatitude);
 
         System.out.println("Distance entre A jusqu'au pole Nord puis jusqu'au méridien de B avec pour degré de latitude = " + degLatitude + " : " + distMeridien);
-        Point a = new Point(0,10);
-        Point b = new Point (0,10);
+        Point a = new Point(10,30);
+        Point b = new Point (100,30);
         Distance d = new Distance(a,b);
 
         System.out.println(d.loxdromie());

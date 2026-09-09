@@ -16,6 +16,10 @@ public class Distance {
         latB=B.getLatitude();
     }
 
+    public Distance(double teta){
+
+    }
+
     public double loxdromie (){
         // si meme latitude -> division par 0 danger
         if (latA == latB) {
