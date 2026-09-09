@@ -18,18 +18,18 @@ public class Main {
         double distMeridien = 2*distSurMemeMeridien(teta, degLatitude);
 
         System.out.println("Distance entre A jusqu'au pole Nord puis jusqu'au méridien de B avec pour degré de latitude = " + degLatitude + " : " + distMeridien);
-        double latA = 30.0;
-        double latB = 70.0;
-        double longA = 10.0;
-        double longB = 100.0;
+        Point a = new Point(0,10);
+        Point b = new Point (0,10);
+        Distance d = new Distance(a,b);
 
-        System.out.println(loxodromie(longA,latA,longB,latB));
+        System.out.println(d.loxdromie());
 
 
-        double distOrtho = ortohodromie(latA, longA, latB, longB);
+        double distOrtho =d.ortohodromie();
 
 
         System.out.println("Distance orthodromique entre point A et point B : " + distOrtho);
+
 
 
 
@@ -52,57 +52,11 @@ public class Main {
 
         return r * Math.toRadians(deltaLongitude);
     }
-//pp
+
     public static double distSurMemeMeridien(double teta, double degLatitude) {
         double distDegLatitude = 111.12;
         return (degLatitude - teta) * distDegLatitude;
     }
-
-    public static double loxodromie (double longA, double latA,double longB, double latB){
-        // si meme latitude -> division par 0 danger
-        if (latA == latB){
-            return Math.abs((longA-longB))*60*Math.cos(latA);
-        }
-        else if (longA==longB){
-            return Math.abs(latA-latB) * 60;
-        }
-        else {
-            double rv = routeVraie(longA,latA,longB,latB);
-            double res = (60 * (latA - latB)) / Math.cos(rv);
-            return Math.abs(res);
-        }
-    }
-
-    public static double routeVraie(double longA, double latA, double longB, double latB ){
-        double res;
-        double b= Math.log(Math.tan(Math.toRadians(45+ (latB/2))));
-        double a= Math.log(Math.tan(Math.toRadians(45+ (latA/2))));
-
-
-        //resultat en radiant pour eviter des conversions inutiles pour la loxodromie
-        return Math.atan((Math.toRadians(longA-longB)) /(b-a));
-    }
-
-    public static double ortohodromie(double phiA, double lambdaA, double phiB, double lambdaB){
-
-        double radPhiA = Math.toRadians(phiA);
-        double radLambdaA = Math.toRadians(lambdaA);
-        double radPhiB = Math.toRadians(phiB);
-        double radLambdaB = Math.toRadians(lambdaB);
-
-        double base = Math.sin(radPhiA)*Math.sin(radPhiB)+ Math.cos(radPhiA)*Math.cos(radPhiB)*Math.cos(radLambdaB-radLambdaA);
-        //System.out.println("res attendu = 0.469846310393. res obtenu : "+base);
-
-        double base2 = Math.acos(base);
-        //System.out.println("res attendu = 61.9756793. res obtenu :"+base2);
-
-        double dist = 60*Math.toDegrees(base2);
-
-
-        return dist;
-
-    }
-
 
 
 
