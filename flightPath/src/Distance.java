@@ -6,6 +6,7 @@ public class Distance {
     private double latB;
     private double longA;
     private double longB;
+    private double teta;
 
     public Distance (Point a,Point b){
         this.A = a;
@@ -17,7 +18,11 @@ public class Distance {
     }
 
     public Distance(double teta){
+        this.teta=teta;
+    }
 
+    public double getTeta() {
+        return teta;
     }
 
     public double loxdromie (){
@@ -64,6 +69,81 @@ public class Distance {
 
         return dist;
 
+    }
+
+    public double longueurParallele() {
+        double rayonTerre = 6371;
+        double r = rayonTerre*Math.cos(this.teta);
+        return 2*Math.PI*r;
+    }
+
+    public double distSurMemeMeridien(double degLatitude) {
+        double distDegLatitude = 111.12;
+        return (degLatitude - this.teta) * distDegLatitude;
+    }
+
+    public double distSurMemeParallele(double longitudeA, double longitudeB) {
+        double rayonTerre = 6371;
+        double r = rayonTerre * Math.cos(Math.toRadians(this.teta));
+
+        double deltaLongitude = Math.abs(longitudeB - longitudeA);
+        if (deltaLongitude > 180) {
+            deltaLongitude = 360 - deltaLongitude;
+        }
+
+        return r * Math.toRadians(deltaLongitude);
+    }
+
+    public Point getA() {
+        return A;
+    }
+
+    public void setA(Point a) {
+        A = a;
+    }
+
+    public Point getB() {
+        return B;
+    }
+
+    public void setB(Point b) {
+        B = b;
+    }
+
+    public double getLatA() {
+        return latA;
+    }
+
+    public void setLatA(double latA) {
+        this.latA = latA;
+    }
+
+    public double getLatB() {
+        return latB;
+    }
+
+    public void setLatB(double latB) {
+        this.latB = latB;
+    }
+
+    public double getLongA() {
+        return longA;
+    }
+
+    public void setLongA(double longA) {
+        this.longA = longA;
+    }
+
+    public double getLongB() {
+        return longB;
+    }
+
+    public void setLongB(double longB) {
+        this.longB = longB;
+    }
+
+    public void setTeta(double teta) {
+        this.teta = teta;
     }
 }
 
