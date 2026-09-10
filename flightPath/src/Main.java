@@ -6,14 +6,16 @@ public class Main {
         Distance z = new Distance(45);
         Point a = new Point(10,30);
         Point b = new Point (100,30);
+
+        double longitudeA = 0;
+        double longitudeB = 180;
+
         Distance d = new Distance(a,b);
 
         double longueur = z.longueurParallele();
 
         System.out.println("Longueur du parallèle avec pour colatitude teta = " + z.getTeta() + " : " + longueur);
 
-        double longitudeA = 0;
-        double longitudeB = 180;
 
         double distParallele = z.distSurMemeParallele(longitudeA,longitudeB);
 
@@ -25,7 +27,7 @@ public class Main {
         System.out.println("Distance entre A jusqu'au pole Nord puis jusqu'au méridien de B avec pour degré de latitude = " + degLatitude + " : " + distMeridien);
 
 
-        System.out.println(d.loxdromie());
+        System.out.println("distance loxodromique : "  + d.loxdromie());
         double distOrtho =d.ortohodromie();
 
 
