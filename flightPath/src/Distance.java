@@ -23,7 +23,7 @@ public class Distance {
     public double loxdromie (){
         // si meme latitude -> division par 0 danger
         if (latA == latB) {
-            return Math.abs((longA - longB)) * 60 * Math.cos(latA);
+            return Math.abs((longA - longB)) * 60 * Math.cos(Math.toRadians((latA)));
         }
         else if (longA==longB){
             System.out.println(latA-latB);
