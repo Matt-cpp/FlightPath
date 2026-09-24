@@ -1,3 +1,9 @@
+import gov.nasa.worldwind.geom.Position;
+
+import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
@@ -32,6 +38,25 @@ public class Main {
 
 
         System.out.println("Distance orthodromique entre point A et point B : " + distOrtho);
+
+        CarteWorldWind carte = new CarteWorldWind();
+
+        // On utilise nos méthodes proprement
+        carte.ajouterPoint(30.4585, 3.9000, "Maubeuge");
+        carte.ajouterPoint(50.6292, 9.2565, "Lille");
+
+        List<Position> trajet = Arrays.asList(
+                Position.fromDegrees(5.4585, 3.9000, 0),
+                Position.fromDegrees(50.6292, 50.2565, 0)
+        );
+        carte.ajouterLigne(trajet);
+
+        // Fenêtre
+        JFrame frame = new JFrame("Ma carte WorldWind");
+        frame.getContentPane().add(carte.getCanvas());
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 
 
