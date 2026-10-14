@@ -1,7 +1,9 @@
 import gov.nasa.worldwind.Model;
+import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.EarthFlat;
 import gov.nasa.worldwind.globes.FlatGlobe;
 import gov.nasa.worldwind.layers.Earth.BMNGOneImage;
@@ -13,6 +15,8 @@ import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.ShapeAttributes;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.view.orbit.BasicOrbitView;
+import gov.nasa.worldwind.view.orbit.OrbitView;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -29,12 +33,15 @@ public class CarteWorldWind {
 
         Model model = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
 
-        // Remplace le globe 3D par un globe plat
-        EarthFlat globePlat = new EarthFlat();
-        globePlat.setProjection(FlatGlobe.PROJECTION_MERCATOR); // ou PROJECTION_MERCATOR
-        model.setGlobe(globePlat);
-
         wwd.setModel(model);
+
+        // Remplace le globe 3D par un globe plat
+        Earth globe = new Earth();
+        wwd.getModel().setGlobe(globe);
+
+
+        View view3D = new BasicOrbitView();
+        wwd.setView(view3D);
 
         model.getLayers().add(new BMNGOneImage());
 
@@ -64,12 +71,13 @@ public class CarteWorldWind {
     public void ajouterLigne(List<Position> positions) {
         Path chemin = new Path(positions);
         chemin.setAltitudeMode(WorldWind.CLAMP_TO_GROUND);
-        chemin.setPathType(String.valueOf(WorldWind.GREAT_CIRCLE));
+        chemin.setPathType(String.valueOf(WorldWind.LINEAR));
 
         ShapeAttributes attrsLigne = new BasicShapeAttributes();
         attrsLigne.setOutlineMaterial(new Material(Color.RED));
         attrsLigne.setOutlineWidth(2.0);
         chemin.setAttributes(attrsLigne);
+        chemin.setFollowTerrain(true);
 
         couche.addRenderable(chemin);
         wwd.redraw();

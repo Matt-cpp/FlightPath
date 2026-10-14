@@ -25,7 +25,7 @@ public class Distance {
         return teta;
     }
 
-    public double loxdromie (){
+    public double loxodromie (){
         // si meme latitude -> division par 0 danger
         if (latA == latB) {
             return Math.abs((longA - longB)) * 60 * Math.cos(Math.toRadians((latA)));

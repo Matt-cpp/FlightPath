@@ -33,7 +33,7 @@ public class Main {
         System.out.println("Distance entre A jusqu'au pole Nord puis jusqu'au méridien de B avec pour degré de latitude = " + degLatitude + " : " + distMeridien);
 
 
-        System.out.println("distance loxodromique : "  + d.loxdromie());
+        System.out.println("distance loxodromique : "  + d.loxodromie());
         double distOrtho =d.ortohodromie();
 
 
@@ -47,6 +47,8 @@ public class Main {
 
         List<Position> trajet = Arrays.asList(
                 Position.fromDegrees(5.4585, 3.9000, 0),
+                Position.fromDegrees(30.4585, 3.9000, 0),
+                Position.fromDegrees(50.6292, 9.2565, 0),
                 Position.fromDegrees(50.6292, 50.2565, 0)
         );
         carte.ajouterLigne(trajet);
