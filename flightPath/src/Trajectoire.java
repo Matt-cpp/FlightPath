@@ -1,15 +1,14 @@
+import java.util.List;
+
 public class Trajectoire {
-    private double valeur;
 
-    public Trajectoire(double valeur) {
-        this.valeur = valeur;
+    private List<Coordonnee> points;
+
+    public Trajectoire(List<Coordonnee> points) {
+        this.points = points;
     }
 
-    public double getValeur() {
-        return valeur;
-    }
-
-    public void setValeur(double valeur) {
-        this.valeur = valeur;
+    public List<Coordonnee> getPoints() {
+        return points;
     }
 }

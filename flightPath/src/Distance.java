@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Distance {
 
     private Point A;
@@ -25,50 +28,279 @@ public class Distance {
         return teta;
     }
 
-    public double loxodromie (){
-        // si meme latitude -> division par 0 danger
-        if (latA == latB) {
-            return Math.abs((longA - longB)) * 60 * Math.cos(Math.toRadians((latA)));
+    public Trajectoire loxodromie(int nombrePoints) {
+
+        if (nombrePoints < 2) {
+            throw new IllegalArgumentException(
+                    "Il faut au moins 2 points."
+            );
         }
-        else if (longA==longB){
-            System.out.println(latA-latB);
-            return Math.abs(latA-latB) * 60;
+
+        if (Math.abs(latA) >= 90 || Math.abs(latB) >= 90) {
+            throw new IllegalArgumentException(
+                    "La loxodromie ne peut pas partir d'un pôle."
+            );
         }
-        else {
-            double rv = this.routeVraie(longA,latA,longB,latB);
-            double res = (60 * (latA - latB)) / Math.cos(rv);
-            return Math.abs(res);
+
+        List<Coordonnee> points = new ArrayList<>();
+
+        double phiA = Math.toRadians(latA);
+        double phiB = Math.toRadians(latB);
+
+        double lambdaA = Math.toRadians(longA);
+        double lambdaB = Math.toRadians(longB);
+
+        // Différence de longitude normalisée
+        double deltaLambda = lambdaB - lambdaA;
+
+        while (deltaLambda > Math.PI) {
+            deltaLambda -= 2 * Math.PI;
         }
+
+        while (deltaLambda < -Math.PI) {
+            deltaLambda += 2 * Math.PI;
+        }
+
+        // Calcul de la route vraie
+        double rv = routeVraie(
+                longA, latA,
+                longA + Math.toDegrees(deltaLambda), latB
+        );
+
+        // Latitudes isométriques
+        double psiA = Math.log(
+                Math.tan(Math.PI / 4 + phiA / 2)
+        );
+
+        double psiB = Math.log(
+                Math.tan(Math.PI / 4 + phiB / 2)
+        );
+
+        for (int i = 0; i < nombrePoints; i++) {
+
+            double t = (double) i / (nombrePoints - 1);
+
+            double latitude;
+            double longitude;
+
+            if (Math.abs(phiB - phiA) < 1e-10) {
+                // Déplacement sur un parallèle
+                latitude = latA;
+                longitude = Math.toDegrees(
+                        lambdaA + t * deltaLambda
+                );
+
+            } else if (Math.abs(deltaLambda) < 1e-10) {
+                // Déplacement sur un méridien
+                latitude = Math.toDegrees(
+                        phiA + t * (phiB - phiA)
+                );
+                longitude = longA;
+
+            } else {
+                // Interpolation de la latitude isométrique
+                double psi = psiA + t * (psiB - psiA);
+
+                double phi = 2 * Math.atan(Math.exp(psi))
+                        - Math.PI / 2;
+
+                latitude = Math.toDegrees(phi);
+
+                // Longitude calculée à partir de la route vraie
+                double lambda = lambdaA
+                        + Math.tan(rv) * (psi - psiA);
+
+                longitude = Math.toDegrees(lambda);
+            }
+
+            points.add(new Coordonnee(latitude, longitude));
+        }
+
+        return new Trajectoire(points);
     }
 
-    private double routeVraie (double longA, double latA, double longB, double latB){
-        double res;
-        double b= Math.log(Math.tan(Math.toRadians(45+ (latB/2))));
-        double a= Math.log(Math.tan(Math.toRadians(45+ (latA/2))));
+    private double routeVraie(
+            double longA, double latA,
+            double longB, double latB) {
 
+        double phiA = Math.toRadians(latA);
+        double phiB = Math.toRadians(latB);
 
-        //resultat en radiant pour eviter des conversions inutiles pour la loxodromie
-        return Math.atan((Math.toRadians(longA-longB)) /(b-a));
+        double psiA = Math.log(
+                Math.tan(Math.PI / 4 + phiA / 2)
+        );
+
+        double psiB = Math.log(
+                Math.tan(Math.PI / 4 + phiB / 2)
+        );
+
+        double deltaLambda = Math.toRadians(longB - longA);
+
+        while (deltaLambda > Math.PI) {
+            deltaLambda -= 2 * Math.PI;
+        }
+
+        while (deltaLambda < -Math.PI) {
+            deltaLambda += 2 * Math.PI;
+        }
+
+        return Math.atan2(
+                deltaLambda,
+                psiB - psiA
+        );
+    }
+    public double distanceLoxodromie() {
+        double phiA = Math.toRadians(latA);
+        double phiB = Math.toRadians(latB);
+
+        double deltaPhi = phiB - phiA;
+
+        double deltaLambda = Math.toRadians(longB - longA);
+
+        // Choisir le chemin longitudinal le plus court
+        deltaLambda = Math.atan2(
+                Math.sin(deltaLambda),
+                Math.cos(deltaLambda)
+        );
+
+        double psiA = Math.log(
+                Math.tan(Math.PI / 4 + phiA / 2)
+        );
+
+        double psiB = Math.log(
+                Math.tan(Math.PI / 4 + phiB / 2)
+        );
+
+        double deltaPsi = psiB - psiA;
+
+        double q;
+
+        if (Math.abs(deltaPsi) > 1e-10) {
+            q = deltaPhi / deltaPsi;
+        } else {
+            // Cas d'un déplacement sur un parallèle
+            q = Math.cos(phiA);
+        }
+
+        double distanceAngulaire = Math.sqrt(
+                deltaPhi * deltaPhi
+                        + q * q * deltaLambda * deltaLambda
+        );
+
+        double rayonTerre = 6371.0;
+
+        return rayonTerre * distanceAngulaire;
     }
 
-    public double ortohodromie(){
+    public Trajectoire orthodromie(
+            int nombrePoints) {
 
-        double radPhiA = Math.toRadians(latA);
-        double radLambdaA = Math.toRadians(longA);
-        double radPhiB = Math.toRadians(latB);
-        double radLambdaB = Math.toRadians(longB);
+        List<Coordonnee> points = new ArrayList<>();
 
-        double base = Math.sin(radPhiA)*Math.sin(radPhiB)+ Math.cos(radPhiA)*Math.cos(radPhiB)*Math.cos(radLambdaB-radLambdaA);
-        //System.out.println("res attendu = 0.469846310393. res obtenu : "+base);
+        if (nombrePoints < 2) {
+            throw new IllegalArgumentException(
+                    "Il faut au moins 2 points."
+            );
+        }
 
-        double base2 = Math.acos(base);
-        //System.out.println("res attendu = 61.9756793. res obtenu :"+base2);
+        double phiA = Math.toRadians(latA);
+        double lambdaA = Math.toRadians(longA);
+        double phiB = Math.toRadians(latB);
+        double lambdaB = Math.toRadians(longB);
 
-        double dist = 60*Math.toDegrees(base2);
+
+        double[] a = {
+                Math.cos(phiA) * Math.cos(lambdaA),
+                Math.cos(phiA) * Math.sin(lambdaA),
+                Math.sin(phiA)
+        };
+
+        double[] b = {
+                Math.cos(phiB) * Math.cos(lambdaB),
+                Math.cos(phiB) * Math.sin(lambdaB),
+                Math.sin(phiB)
+        };
+
+        double produitScalaire =
+                a[0] * b[0]
+                        + a[1] * b[1]
+                        + a[2] * b[2];
 
 
-        return dist;
+        produitScalaire = Math.max(
+                -1.0, Math.min(1.0, produitScalaire)
+        );
 
+        double angle = Math.acos(produitScalaire);
+
+        for (int i = 0; i < nombrePoints; i++) {
+
+            double t = (double) i / (nombrePoints - 1);
+
+            double x, y, z;
+
+            if (angle < 1e-10) {
+                x = a[0];
+                y = a[1];
+                z = a[2];
+
+            } else if (Math.PI - angle < 1e-7) {
+                throw new IllegalArgumentException(
+                        "Points antipodaux : orthodromie non unique."
+                );
+
+            } else {
+                double poidsA =
+                        Math.sin((1 - t) * angle) / Math.sin(angle);
+
+                double poidsB =
+                        Math.sin(t * angle) / Math.sin(angle);
+
+                x = poidsA * a[0] + poidsB * b[0];
+                y = poidsA * a[1] + poidsB * b[1];
+                z = poidsA * a[2] + poidsB * b[2];
+            }
+
+
+            double latitude = Math.toDegrees(
+                    Math.atan2(z, Math.sqrt(x * x + y * y))
+            );
+
+            double longitude = Math.toDegrees(
+                    Math.atan2(y, x)
+            );
+
+            points.add(new Coordonnee(latitude, longitude));
+        }
+
+        return new Trajectoire(points);
+    }
+
+    public double distanceOrthodromie() {
+        double phiA = Math.toRadians(latA);
+        double phiB = Math.toRadians(latB);
+
+        double deltaPhi = phiB - phiA;
+        double deltaLambda = Math.toRadians(longB - longA);
+
+        // Normalisation de la différence de longitude
+        deltaLambda = Math.atan2(
+                Math.sin(deltaLambda),
+                Math.cos(deltaLambda)
+        );
+
+        double a = Math.pow(Math.sin(deltaPhi / 2), 2)
+                + Math.cos(phiA) * Math.cos(phiB)
+                * Math.pow(Math.sin(deltaLambda / 2), 2);
+
+        double angle = 2 * Math.atan2(
+                Math.sqrt(a),
+                Math.sqrt(1 - a)
+        );
+
+        double rayonTerre = 6371.0; // en kilomètres
+
+        return rayonTerre * angle;
     }
 
     public double longueurParallele() {
