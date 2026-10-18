@@ -67,7 +67,7 @@ public class Distance {
                 longA + Math.toDegrees(deltaLambda), latB
         );
 
-        // Latitudes isométriques
+        // Latitude croissante
         double psiA = Math.log(
                 Math.tan(Math.PI / 4 + phiA / 2)
         );
@@ -298,7 +298,7 @@ public class Distance {
                 Math.sqrt(1 - a)
         );
 
-        double rayonTerre = 6371.0; // en kilomètres
+        double rayonTerre = 6371.0;
 
         return rayonTerre * angle;
     }
